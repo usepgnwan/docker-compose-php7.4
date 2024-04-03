@@ -1,0 +1,36 @@
+version: "3.9"
+
+networks:
+  my-network:
+    name: my-network
+
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:latest
+    environment: 
+      - ConnectionStrings_DefaultConnection=SERVER=host.docker.internal;1433;Database=ASSIGNMENT;User ID=SA;Password=123456;MultipleActiveResultSets=True;TrustServerCertificate=True;
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD:"123456"
+    expose:
+      - 81
+    ports:
+      - "1439:1433" 
+      - "54621:54628" 
+      - 5101:80
+    networks: 
+      - my-network
+  php7.4-assignment:
+    container_name: php7.4-assignment
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ./sites:/etc/apache2/sites-enabled
+      - C:\htdocs:/var/www/html
+    ports:
+      - 81:80
+    networks: 
+      - my-network
